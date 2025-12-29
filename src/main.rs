@@ -3,16 +3,25 @@ pub trait Field {
     fn df(&self, x: &Vec<f64>) -> Vec<f64>;
 }
 
-fn solver(field: impl Field, x0: Vec<f64>) {
+fn solver(end_time: f64, field: impl Field, x0: Vec<f64>, print_time: f64) {
+    let mut time = 0.0;
+    let mut next_print_time = print_time;
     let dt = 0.001;
-    let mut x: Vec<f64> = Vec::new();
-    x = x0;
-    for i in 0..100000 {
+    let mut x: Vec<f64> = x0;
+    while time <= end_time {
         let dx = field.df(&x);
-        for j in 0..x.len() {
-            x[j] = x[j] + dx[j]*dt;
+        for i in 0..x.len() {
+            x[i] = x[i] + dx[i]*dt;
         }
-        println!("{:?}, {:?}", (i as f64)*dt, x);
+        time += dt;
+        if time >= next_print_time {
+            print!("{:?} ", time);
+            for v in &x {
+                print!("{} ", v);
+            }
+            println!("");
+            next_print_time += print_time;
+        }
     }
 }
 
@@ -36,8 +45,7 @@ impl Field for Brusselator {
     }
 }
 
-
 fn main() {
     let b = Brusselator::new(vec![1.0, 3.0]);
-    solver(b, vec![1.0, 1.0]);
+    solver(30.0, b, vec![1.0, 1.0], 0.1);
 }
