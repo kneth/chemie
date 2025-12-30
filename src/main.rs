@@ -14,7 +14,7 @@ use std::env;
 
 pub trait Field {
     fn new(p: Vec<f64>) -> impl Field;
-    fn df(&self, x: &Vec<f64>) -> Vec<f64>;
+    fn f(&self, x: &Vec<f64>) -> Vec<f64>;
 }
 
 fn solver(end_time: f64, field: impl Field, x0: Vec<f64>, print_time: f64) {
@@ -23,7 +23,7 @@ fn solver(end_time: f64, field: impl Field, x0: Vec<f64>, print_time: f64) {
     let dt = 0.001;
     let mut x: Vec<f64> = x0;
     while time <= end_time {
-        let dx = field.df(&x);
+        let dx = field.f(&x);
         for i in 0..x.len() {
             x[i] = x[i] + dx[i]*dt;
         }
@@ -54,7 +54,7 @@ impl Field for Lorentz {
         }
     }
 
-    fn df(&self, x: &Vec<f64>) -> Vec<f64> {
+    fn f(&self, x: &Vec<f64>) -> Vec<f64> {
         let d0 = self.sigma*(x[1]-x[0]);
         let d1 = x[0]*(self.rho-x[2]) - x[1];
         let d2 = x[0]*x[1] - self.beta*x[2];
@@ -75,7 +75,7 @@ impl Field for Brusselator {
         }
     }
 
-    fn df(&self, x: &Vec<f64>) -> Vec<f64> {
+    fn f(&self, x: &Vec<f64>) -> Vec<f64> {
         let d0 = self.a + x[0]*x[0]*x[1] - self.b*x[0] - x[0];
         let d1 = self.b*x[0] - x[0]*x[0]*x[1];
         return vec![d0, d1];
